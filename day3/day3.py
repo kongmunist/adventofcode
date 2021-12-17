@@ -55,10 +55,14 @@ for i in range(len(inputs[0])):
         # Also , the least common bit is 0
         epsilon_rate.append(0)
     # if there are more 0s than 1s, the most common bit is 0
-    else:
+    elif zeros > ones:
         gamma_rate.append(0)
         # Also , the least common bit is 1
         epsilon_rate.append(1)
+    # if there are equal numbers of 1s and 0s, give gamma 1 and epsilon 0
+    else:
+        gamma_rate.append(1)
+        epsilon_rate.append(0)
 
 # Convert gamma_rate and epsilon_rate to binary strings
 gamma_rate_str = ''.join(str(x) for x in gamma_rate)
@@ -101,6 +105,72 @@ print(power_consumption)
 # Finally, to find the life support rating, multiply the oxygen generator rating (23) by the CO2 scrubber rating (10) to get 230.
 #
 # Use the binary numbers in your diagnostic report to calculate the oxygen generator rating and CO2 scrubber rating, then multiply them together. What is the life support rating of the submarine? (Be sure to represent your answer in decimal, not binary.)
+
+
+# Solve
+
+# Make a copy of the inputs into oxy and co2 variables
+import copy
+oxy = copy.deepcopy(inputs)
+co2 = copy.deepcopy(inputs)
+
+# iterate over bit positions of inputs
+for i in range(len(inputs[0])):
+    # To find oxygen generator rating, determine the most common value (0 or 1) in the current bit position
+    # To find CO2 scrubber rating, determine the least common value (0 or 1) in the current bit position
+
+    # find the most common value in the current bit position for each element in oxygen generator
+    oxy_bit = [oxy[j][i] for j in range(len(oxy))]
+    onescount = sum(1 for x in oxy_bit if x == 1)
+    zerocount = sum(1 for x in oxy_bit if x == 0)
+    # find most common value in that position, prefer 1
+    if onescount > zerocount:
+        oxy_most_common = 1
+    elif onescount < zerocount:
+        oxy_most_common = 0
+    else:
+        oxy_most_common = 1
+
+    # find the least common value in the current bit position for each element in CO2 scrubber
+    co2_bit = [co2[j][i] for j in range(len(co2))]
+    onescount = sum(1 for x in co2_bit if x == 1)
+    zerocount = sum(1 for x in co2_bit if x == 0)
+    # find least common value in that position, prefer 0
+    if onescount > zerocount:
+        co2_least_common = 0
+    elif onescount < zerocount:
+        co2_least_common = 1
+    else:
+        # make 0 if equal
+        co2_least_common = 0
+
+
+
+    # For each element in oxy, remove all elements that don't have the common oxy bit in the ith position. list comprehension
+    # only do it if oxy has more than one element
+    if len(oxy) > 1:
+        oxy = [oxy[j] for j in range(len(oxy)) if oxy[j][i] == oxy_most_common]
+
+    # For each element in co2, remove all elements that have epsilon_rate[i] in the ith position. list comprehension
+    # only do it if co2 has more than one element
+    if len(co2) > 1:
+        co2 = [co2[j] for j in range(len(co2)) if co2[j][i] == co2_least_common]
+
+# extract the binary string of oxy[0] and co2[0]
+oxy_bin = ''.join(str(x) for x in oxy[0])
+co2_bin = ''.join(str(x) for x in co2[0])
+
+# then convert to ints
+oxy_int = int(oxy_bin, 2)
+co2_int = int(co2_bin, 2)
+
+# then multiply and print the answer
+print(oxy_int * co2_int)
+
+
+
+
+
 
 
 
